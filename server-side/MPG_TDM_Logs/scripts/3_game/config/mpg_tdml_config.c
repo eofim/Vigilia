@@ -5,22 +5,22 @@ class MPG_TDML_ModConfig {
   bool isModDisabled = false;
   bool isDebugEnabled = false;
 
-  // === CONFIGURAÃ‡Ã•ES GERAIS DE LOOT LOGGING ===
+  // === CONFIGURAÇÕES GERAIS DE LOOT LOGGING ===
   bool isLootLoggingEnabled = true;
   float maxDistance = 5.0;
   ref TStringArray ignoreItems = new TStringArray;
   ref TStringArray ignoreContainers = new TStringArray;
 
-  // === CONFIGURAÃ‡Ã•ES DE DISCORD PARA LOOT ===
+  // === CONFIGURAÇÕES DE DISCORD PARA LOOT ===
   string lootDiscordUrl;
   string lootDiscordTitle = "PossÃ­vel cheater";
 
-  // === CONFIGURAÃ‡Ã•ES DE DEATH LOGGING ===
+  // === CONFIGURAÇÕES DE DEATH LOGGING ===
   bool isDeathLoggingEnabled = true;
   string deathDiscordUrl;
   string deathDiscordTitle = "Morte de Personagem";
   
-  // === CONFIGURAÃ‡Ã•ES DE DISCONNECT LOGGING ===
+  // === CONFIGURAÇÕES DE DISCONNECT LOGGING ===
   bool isDisconnectLoggingEnabled = false;
   string disconnectDiscordUrl;
   string disconnectDiscordTitle = "DesconexÃ£o Suspeita";
@@ -41,12 +41,12 @@ class MPG_TDML_ModConfig {
       bool isStrictCheck = false;
       string ignoreItemClass = ignoreItem;
 
-      // Verifica se o item contÃ©m "|", o que indica modo de comparaÃ§Ã£o estrita
+      // Verifica se o item contém "|", o que indica modo de comparação estrita
       if (ignoreItem.Contains("|")) {
         TStringArray params = new TStringArray;
         ignoreItem.Split("|", params);
 
-        // VerificaÃ§Ã£o segura do conteÃºdo de params
+        // Verificações segura do conteúdo de params
         if (params.Count() >= 2) {
           ignoreItemClass = params[0];
           isStrictCheck = params[1].ToInt() == 1;
@@ -55,13 +55,13 @@ class MPG_TDML_ModConfig {
         }
       }
 
-      // ComparaÃ§Ã£o estrita (nome exato)
+      // comparação estrita (nome exato)
       if (isStrictCheck) {
         if (ignoreItemClass == type) {
           return true;
         }
       }
-      // ComparaÃ§Ã£o por heranÃ§a usando IsKindOf
+      // comparação por herança usando IsKindOf
       else {
         if (GetGame().IsKindOf(type, ignoreItemClass)) {
           return true;
@@ -95,11 +95,11 @@ class MPG_TDML_ModConfig {
       MakeDirectory(MPG_TDML_ROOT_DIR);
     }
 
-    // ConfiguraÃ§Ãµes padrÃ£o
+    // Configurações padrão
     ignoreItems = { "Apple", "CowboyHat_green", "HuntingKnife|1" };
     ignoreContainers = { "AliceBag_Black", "Bear_Dark" };
 
-    // URLs de exemplo (devem ser configuradas pelo usuÃ¡rio)
+    // URLs de exemplo (devem ser configuradas pelo usuário)
     lootDiscordUrl = "";
     deathDiscordUrl = "";
     disconnectDiscordUrl = "";
@@ -116,7 +116,7 @@ class MPG_TDML_ModConfig {
     if (!configVersion || configVersion < 2) {
       configVersion = 2;
       
-      // Adicionar novas configuraÃ§Ãµes se nÃ£o existirem
+      // Adicionar novas Configurações se não existirem
       if (!isLootLoggingEnabled) isLootLoggingEnabled = true;
       if (!isDeathLoggingEnabled) isDeathLoggingEnabled = true;
       if (!isDisconnectLoggingEnabled) isDisconnectLoggingEnabled = false;
