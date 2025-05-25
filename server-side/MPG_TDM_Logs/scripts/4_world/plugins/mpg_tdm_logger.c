@@ -85,7 +85,7 @@ class MPG_TDM_Logger extends PluginBase {
       if (config.isLootLoggingEnabled) {
         m_LogFile = OpenFile(MPG_TDML_LOGS_FILENAME, FileMode.WRITE);
         if (m_LogFile != 0) {
-          FPrintln(m_LogFile, "Date Time" + logSep + "Action" + logSep + "persistentID" + logSep + "itemType" + logSep + "itemName" + logSep + "distance" + logSep + "oldLocText" + logSep + "oldLocParentType" + logSep + "oldLocParentName" + logSep + "oldLocPos" + logSep + "oldParentPersistentID" + logSep + "oldSteamId" + logSep + "oldName" + logSep + "oldPlayerPos" + logSep + "newLocText" + logSep + "newLocParentType" + logSep + "newLocParentName" + logSep + "newLocPos" + logSep + "newParentPersistentID" + logSep + "newSteamId" + logSep + "newName" + logSep + "newPlayerPos");
+          FPrintln(m_LogFile, "Date Time" + logSep + "Action" + logSep + "persistentID" + logSep + "itemType" + logSep + "itemName" + logSep + "isStackable" + logSep + "stackSize" + logSep + "distance" + logSep + "oldLocText" + logSep + "oldLocParentType" + logSep + "oldLocParentName" + logSep + "oldLocPos" + logSep + "oldParentPersistentID" + logSep + "oldSteamId" + logSep + "oldName" + logSep + "oldPlayerPos" + logSep + "newLocText" + logSep + "newLocParentType" + logSep + "newLocParentName" + logSep + "newLocPos" + logSep + "newParentPersistentID" + logSep + "newSteamId" + logSep + "newName" + logSep + "newPlayerPos");
         } else {
           Print(MPG_TDML + "ERROR: Unable to create " + MPG_TDML_LOGS_FILENAME);
         }
@@ -255,20 +255,20 @@ class MPG_TDM_Logger extends PluginBase {
   }
 
   void SendToDiscord(string url, string title, string message) {
-    if (url == string.Empty) {
+    if (url == "") {
       return;
     }
 
-    RestContext restCtx;
-    
     if (!lootRestContext) {
       lootRestContext = GetRestApi().GetRestContext(url);
       lootRestContext.SetHeader("application/json");
     }
-    restCtx = lootRestContext;
 
     MPG_TDM_DiscordMessage data = new MPG_TDM_DiscordMessage(title, message);
-    restCtx.POST(null, "", string.Format("{\"embeds\":[%1]}", JsonFileLoader<MPG_TDM_DiscordMessage>.JsonMakeData(data)));
+    string jsonData = JsonFileLoader<MPG_TDM_DiscordMessage>.JsonMakeData(data);
+    string payload = "{\"embeds\":[" + jsonData + "]}";
+    
+    lootRestContext.POST(null, "", payload);
   }
 };
 

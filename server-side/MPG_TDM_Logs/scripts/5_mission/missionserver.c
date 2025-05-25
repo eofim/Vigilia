@@ -1,6 +1,6 @@
 modded class MissionServer extends MissionBase {
-  // Aguardando correção do bug https://feedback.bistudio.com/T183081
-  // void MissionServer() { Não pode usar o construtor
+  // Aguardando correÃ§Ã£o do bug https://feedback.bistudio.com/T183081
+  // void MissionServer() { NÃ£o pode usar o construtor
 
   override void OnInit() {
     super.OnInit();
@@ -9,11 +9,11 @@ modded class MissionServer extends MissionBase {
     if (GetGame().IsServer() || !GetGame().IsMultiplayer()) {
       Print(MPG_TDML + " MissionServer Init");
       
-      // Resetar configuração global para garantir carregamento correto
+      // Resetar configuraÃ§Ã£o global para garantir carregamento correto
       g_MPG_TDML_ModConfig = NULL;
       GetMPG_TDML_ModConfig();
       
-      // Verificar se as configurações foram carregadas corretamente
+      // Verificar se as configuraÃ§Ãµes foram carregadas corretamente
       MPG_TDML_ModConfig config = GetMPG_TDML_ModConfig();
       if (config) {
         Print(MPG_TDML + " Config loaded successfully");
@@ -37,7 +37,7 @@ modded class MissionServer extends MissionBase {
     if (GetGame().IsServer() || !GetGame().IsMultiplayer()) {
       Print(MPG_TDML + " MissionServer Finish");
       
-      // Limpar recursos se necessário
+      // Limpar recursos se necessÃ¡rio
       if (g_MPG_TDML_ModConfig) {
         Print(MPG_TDML + " Cleaning up config resources");
       }
