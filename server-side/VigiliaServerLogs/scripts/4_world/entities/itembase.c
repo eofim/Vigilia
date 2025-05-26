@@ -1,26 +1,26 @@
 modded class ItemBase {
-  MPG_TDM_Logger MPG_TDMLogger = MPG_TDM_Logger.Cast(GetPlugin(MPG_TDM_Logger));
-  MPG_TDML_ModConfig MPG_TDML_Config = g_MPG_TDML_ModConfig;
+  Vigilia_Logger VigiliaLogger = Vigilia_Logger.Cast(GetPlugin(Vigilia_Logger));
+  Vigilia_ModConfig VIGILIA_Config = g_Vigilia_ModConfig;
 
-  private bool MPG_TDML_isFlagSet = false;
-  private bool MPG_TDML_Ignored = false;
+  private bool VIGILIA_isFlagSet = false;
+  private bool VIGILIA_Ignored = false;
 
-  bool MPG_TDML_IsIgnored() {
-    if (!MPG_TDML_Config) {
+  bool VIGILIA_IsIgnored() {
+    if (!VIGILIA_Config) {
       return false;
     }
-    if (!MPG_TDML_isFlagSet) {
+    if (!VIGILIA_isFlagSet) {
       if (GetInventory() && GetInventory().GetCargo()) {
-        MPG_TDML_Ignored = MPG_TDML_Config.IsIgnoredContainer(GetType());
+        VIGILIA_Ignored = VIGILIA_Config.IsIgnoredContainer(GetType());
       } else {
-        MPG_TDML_Ignored = MPG_TDML_Config.IsIgnoredItem(GetType());
+        VIGILIA_Ignored = VIGILIA_Config.IsIgnoredItem(GetType());
       }
-      MPG_TDML_isFlagSet = true;
+      VIGILIA_isFlagSet = true;
     }
-    return MPG_TDML_Ignored;
+    return VIGILIA_Ignored;
   }
 
-  string MPG_TDML_GetItemId() {
+  string VIGILIA_GetItemId() {
     int b1, b2, b3, b4;
     GetPersistentID(b1, b2, b3, b4);
     
@@ -33,20 +33,20 @@ modded class ItemBase {
     return b1.ToString() + "-" + b2.ToString() + "-" + b3.ToString() + "-" + b4.ToString();
   }
 
-  string MPG_TDML_GetLocParentId(notnull InventoryLocation itemLoc) {
+  string VIGILIA_GetLocParentId(notnull InventoryLocation itemLoc) {
     ItemBase parentItem = ItemBase.Cast(itemLoc.GetParent());
     string persisId = "0-0-0-0";
 
     if (parentItem) {
       if (itemLoc.GetType() == InventoryLocationType.ATTACHMENT || itemLoc.GetType() == InventoryLocationType.CARGO) {
-        persisId = parentItem.MPG_TDML_GetItemId();
+        persisId = parentItem.VIGILIA_GetItemId();
       }
     }
     return persisId;
   }
 
-  void MPG_TDMLogItemBase(notnull InventoryLocation oldLoc, notnull InventoryLocation newLoc) {
-    if (!MPG_TDML_Config || MPG_TDML_Config.isModDisabled || !MPG_TDML_Config.isLootLoggingEnabled) {
+  void VIGILIALogItemBase(notnull InventoryLocation oldLoc, notnull InventoryLocation newLoc) {
+    if (!VIGILIA_Config || VIGILIA_Config.isModDisabled || !VIGILIA_Config.isLootLoggingEnabled) {
       return;
     }
 
@@ -60,7 +60,7 @@ modded class ItemBase {
       return;
     }
 
-    if (MPG_TDML_IsIgnored()) {
+    if (VIGILIA_IsIgnored()) {
       return;
     }
 
@@ -69,14 +69,14 @@ modded class ItemBase {
 
     if (oldLocType == InventoryLocationType.CARGO) {
       ItemBase oldCargo = ItemBase.Cast(oldLoc.GetParent());
-      if (oldCargo && oldCargo.MPG_TDML_IsIgnored()) {
+      if (oldCargo && oldCargo.VIGILIA_IsIgnored()) {
         oldCargoIgnored = true;
       }
     }
 
     if (newLocType == InventoryLocationType.CARGO) {
       ItemBase newCargo = ItemBase.Cast(newLoc.GetParent());
-      if (newCargo && newCargo.MPG_TDML_IsIgnored()) {
+      if (newCargo && newCargo.VIGILIA_IsIgnored()) {
         newCargoIgnored = true;
       }
     }
@@ -98,8 +98,8 @@ modded class ItemBase {
       return;
     }
 
-    string sep = MPG_TDML_LOG_SEPARATOR;
-    string persistentID = MPG_TDML_GetItemId();
+    string sep = VIGILIA_LOG_SEPARATOR;
+    string persistentID = VIGILIA_GetItemId();
     string itemType = this.GetType();
     string itemName = this.GetDisplayName();
     
@@ -117,8 +117,8 @@ modded class ItemBase {
       }
     }
 
-    string oldLocText = MPG_TDMLogger.GetLocType(oldLocType);
-    string newLocText = MPG_TDMLogger.GetLocType(newLocType);
+    string oldLocText = VigiliaLogger.GetLocType(oldLocType);
+    string newLocText = VigiliaLogger.GetLocType(newLocType);
 
     PlayerBase new_player = null;
     PlayerBase old_player = null;
@@ -139,21 +139,21 @@ modded class ItemBase {
       new_player = PlayerBase.Cast(newLocParent.GetHierarchyRootPlayer());
     }
 
-    string oldPlayerInfo = MPG_TDMLogger.GetPlayerInfo(old_player);
-    string newPlayerInfo = MPG_TDMLogger.GetPlayerInfo(new_player);
+    string oldPlayerInfo = VigiliaLogger.GetPlayerInfo(old_player);
+    string newPlayerInfo = VigiliaLogger.GetPlayerInfo(new_player);
 
     if (old_player && old_player == new_player) {
       return;
     }
 
-    MPG_TDML_ActionType actionType = MPG_TDML_ActionType.MOVE;
+    Vigilia_ActionType actionType = Vigilia_ActionType.MOVE;
 
     if (oldLocType == InventoryLocationType.GROUND || (!old_player && new_player)) {
-      actionType = MPG_TDML_ActionType.TAKE;
+      actionType = Vigilia_ActionType.TAKE;
     }
 
     if (newLocType == InventoryLocationType.GROUND || (old_player && !new_player)) {
-      actionType = MPG_TDML_ActionType.DROP;
+      actionType = Vigilia_ActionType.DROP;
     }
 
     if (!old_player && new_player) {
@@ -174,10 +174,10 @@ modded class ItemBase {
       }
     }
 
-    string oldPlace = oldLocText + sep + oldLocParentType + sep + oldLocParentName + sep + MPG_TDMLogger.GetParedPosition(oldLocPos) + sep + MPG_TDML_GetLocParentId(oldLoc) + sep + oldPlayerInfo;
-    string newPlace = newLocText + sep + newLocParentType + sep + newLocParentName + sep + MPG_TDMLogger.GetParedPosition(newLocPos) + sep + MPG_TDML_GetLocParentId(newLoc) + sep + newPlayerInfo;
+    string oldPlace = oldLocText + sep + oldLocParentType + sep + oldLocParentName + sep + VigiliaLogger.GetParedPosition(oldLocPos) + sep + VIGILIA_GetLocParentId(oldLoc) + sep + oldPlayerInfo;
+    string newPlace = newLocText + sep + newLocParentType + sep + newLocParentName + sep + VigiliaLogger.GetParedPosition(newLocPos) + sep + VIGILIA_GetLocParentId(newLoc) + sep + newPlayerInfo;
 
-    string actionStr = MPG_TDMLogger.GetActionType(actionType);
+    string actionStr = VigiliaLogger.GetActionType(actionType);
     string distanceStr = distance.ToString();
     string stackableStr = "false";
     if (isStackable) {
@@ -187,9 +187,9 @@ modded class ItemBase {
     
     string logEntry = actionStr + sep + persistentID + sep + itemType + sep + itemName + sep + stackableStr + sep + stackSizeStr + sep + distanceStr + sep + oldPlace + sep + newPlace;
     
-    MPG_TDMLogger.Log(logEntry);
+    VigiliaLogger.Log(logEntry);
 
-    if (distance >= MPG_TDML_Config.maxDistance && MPG_TDML_Config.lootDiscordUrl != string.Empty) {
+    if (distance >= VIGILIA_Config.maxDistance && VIGILIA_Config.lootDiscordUrl != string.Empty) {
       string pInfo = newPlayerInfo;
       if (!new_player) {
         pInfo = oldPlayerInfo;
@@ -215,13 +215,13 @@ modded class ItemBase {
       message = message + "**ID do Item:** " + persistentID + "\n\n";
       message = message + "**Log Completo:**\n" + cheatLog;
 
-      MPG_TDMLogger.Log(cheatLog);
-      MPG_TDMLogger.SendToDiscord(MPG_TDML_Config.lootDiscordUrl, MPG_TDML_Config.lootDiscordTitle, message);
+      VigiliaLogger.Log(cheatLog);
+      VigiliaLogger.SendToDiscord(VIGILIA_Config.lootDiscordUrl, VIGILIA_Config.lootDiscordTitle, message);
     }
   }
 
   override void EEItemLocationChanged(notnull InventoryLocation oldLoc, notnull InventoryLocation newLoc) {
     super.EEItemLocationChanged(oldLoc, newLoc);
-    MPG_TDMLogItemBase(oldLoc, newLoc);
+    VIGILIALogItemBase(oldLoc, newLoc);
   }
 };

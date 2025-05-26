@@ -1,6 +1,6 @@
 class CfgPatches
 {
-	class MPG_TDM_Logs
+	class VigiliaServerLogs
 	{
 		units[]={};
 		weapons[]={};
@@ -14,18 +14,18 @@ class CfgPatches
 };
 class CfgMods
 {
-	class MPG_TDM_Logs
+	class VigiliaServerLogs
 	{
-		dir="MPG_TDM_Logs";
+		dir="VigiliaServerLogs";
 		picture="";
 		action="";
 		hideName=1;
 		hidePicture=1;
-		name="MPG_TDM_Logs";
-		credits="Reshala";
-		author="pafnuty";
+		name="VigiliaServerLogs";
+		credits="Reshala/pafnuty";
+		author="Eofim";
 		authorID="76561199074811285";
-		version="2.1";
+		version="2.1.1";
 		extra=0;
 		type="mod";
 		dependencies[]=
@@ -41,7 +41,7 @@ class CfgMods
 				value="";
 				files[]=
 				{
-					"MPG_TDM_Logs/Scripts/3_Game"
+					"VigiliaServerLogs/Scripts/3_Game"
 				};
 			};
 			class worldScriptModule
@@ -49,7 +49,7 @@ class CfgMods
 				value="";
 				files[]=
 				{
-					"MPG_TDM_Logs/Scripts/4_World"
+					"VigiliaServerLogs/Scripts/4_World"
 				};
 			};
 			class missionScriptModule
@@ -57,7 +57,7 @@ class CfgMods
 				value="";
 				files[]=
 				{
-					"MPG_TDM_Logs/scripts/5_Mission"
+					"VigiliaServerLogs/scripts/5_Mission"
 				};
 			};
 		};

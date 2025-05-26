@@ -1,9 +1,9 @@
-class MPG_TDM_Logger extends PluginBase {
+class Vigilia_Logger extends PluginBase {
   FileHandle m_LogFile;
   FileHandle m_DeathLogFile;
   FileHandle m_DisconnectLogFile;
 
-  static string logSep = MPG_TDML_LOG_SEPARATOR;
+  static string logSep = VIGILIA_LOG_SEPARATOR;
 
   // clang-format off
   private RestContext lootRestContext;
@@ -11,23 +11,23 @@ class MPG_TDM_Logger extends PluginBase {
   private RestContext disconnectRestContext;
   // clang-format on
 
-  void MPG_TDM_Logger() {
+  void Vigilia_Logger() {
     if (isHost()) {
-      Print(MPG_TDML + " Logger Init");
+      Print(Vigilia_Constant+ " Logger Init");
 
-      if (!FileExist(MPG_TDML_ROOT_DIR)) {
-        Print(MPG_TDML + "'" + MPG_TDML_ROOT_DIR + "' does not exist, creating...");
-        MakeDirectory(MPG_TDML_ROOT_DIR);
+      if (!FileExist(VIGILIA_ROOT_DIR)) {
+        Print(Vigilia_Constant+ "'" + VIGILIA_ROOT_DIR + "' does not exist, creating...");
+        MakeDirectory(VIGILIA_ROOT_DIR);
       }
 
-      if (!FileExist(MPG_TDML_LOGS_DIR)) {
-        Print(MPG_TDML + "'" + MPG_TDML_LOGS_DIR + "' does not exist, creating...");
-        MakeDirectory(MPG_TDML_LOGS_DIR);
+      if (!FileExist(VIGILIA_LOGS_DIR)) {
+        Print(Vigilia_Constant+ "'" + VIGILIA_LOGS_DIR + "' does not exist, creating...");
+        MakeDirectory(VIGILIA_LOGS_DIR);
       }
 
-      if (!FileExist(MPG_TDML_LOGS_ARCHIVES_DIR)) {
-        Print(MPG_TDML + "'" + MPG_TDML_LOGS_ARCHIVES_DIR + "' does not exist, creating...");
-        MakeDirectory(MPG_TDML_LOGS_ARCHIVES_DIR);
+      if (!FileExist(VIGILIA_LOGS_ARCHIVES_DIR)) {
+        Print(Vigilia_Constant+ "'" + VIGILIA_LOGS_ARCHIVES_DIR + "' does not exist, creating...");
+        MakeDirectory(VIGILIA_LOGS_ARCHIVES_DIR);
       }
 
       ArchiveOldLogs();
@@ -35,9 +35,9 @@ class MPG_TDM_Logger extends PluginBase {
     }
   };
 
-  void ~MPG_TDM_Logger() {
+  void ~Vigilia_Logger() {
     if (isHost()) {
-      Print(MPG_TDML + " Logger Closed");
+      Print(Vigilia_Constant+ " Logger Closed");
       CloseFile(m_LogFile);
       CloseFile(m_DeathLogFile);
       CloseFile(m_DisconnectLogFile);
@@ -55,59 +55,59 @@ class MPG_TDM_Logger extends PluginBase {
     string currentTime = GetDate(false) + "_" + GetTime("-");
     
     // Arquivar log de loot
-    if (FileExist(MPG_TDML_LOGS_FILENAME)) {
-      string newLootFileName = MPG_TDML_LOGS_ARCHIVES_DIR + currentTime + "_loot.log";
-      CopyFile(MPG_TDML_LOGS_FILENAME, newLootFileName);
-      DeleteFile(MPG_TDML_LOGS_FILENAME);
+    if (FileExist(VIGILIA_LOGS_FILENAME)) {
+      string newLootFileName = VIGILIA_LOGS_ARCHIVES_DIR + currentTime + "_loot.log";
+      CopyFile(VIGILIA_LOGS_FILENAME, newLootFileName);
+      DeleteFile(VIGILIA_LOGS_FILENAME);
     }
     
     // Arquivar log de morte
-    if (FileExist(MPG_TDML_DEATH_LOGS_FILENAME)) {
-      string newDeathFileName = MPG_TDML_LOGS_ARCHIVES_DIR + currentTime + "_death.log";
-      CopyFile(MPG_TDML_DEATH_LOGS_FILENAME, newDeathFileName);
-      DeleteFile(MPG_TDML_DEATH_LOGS_FILENAME);
+    if (FileExist(VIGILIA_DEATH_LOGS_FILENAME)) {
+      string newDeathFileName = VIGILIA_LOGS_ARCHIVES_DIR + currentTime + "_death.log";
+      CopyFile(VIGILIA_DEATH_LOGS_FILENAME, newDeathFileName);
+      DeleteFile(VIGILIA_DEATH_LOGS_FILENAME);
     }
     
     // Arquivar log de desconexão
-    if (FileExist(MPG_TDML_DISCONNECT_LOGS_FILENAME)) {
-      string newDisconnectFileName = MPG_TDML_LOGS_ARCHIVES_DIR + currentTime + "_disconnect.log";
-      CopyFile(MPG_TDML_DISCONNECT_LOGS_FILENAME, newDisconnectFileName);
-      DeleteFile(MPG_TDML_DISCONNECT_LOGS_FILENAME);
+    if (FileExist(VIGILIA_DISCONNECT_LOGS_FILENAME)) {
+      string newDisconnectFileName = VIGILIA_LOGS_ARCHIVES_DIR + currentTime + "_disconnect.log";
+      CopyFile(VIGILIA_DISCONNECT_LOGS_FILENAME, newDisconnectFileName);
+      DeleteFile(VIGILIA_DISCONNECT_LOGS_FILENAME);
     }
   }
 
   void CreateNewLogFiles() {
-    Print(MPG_TDML + " Logger Create Log Files");
-    MPG_TDML_ModConfig config = GetMPG_TDML_ModConfig();
+    Print(Vigilia_Constant+ " Logger Create Log Files");
+    Vigilia_ModConfig config = GetVigilia_ModConfig();
 
     if (isHost()) {
       // Criar arquivo de log de loot
       if (config.isLootLoggingEnabled) {
-        m_LogFile = OpenFile(MPG_TDML_LOGS_FILENAME, FileMode.WRITE);
+        m_LogFile = OpenFile(VIGILIA_LOGS_FILENAME, FileMode.WRITE);
         if (m_LogFile != 0) {
           FPrintln(m_LogFile, "Date Time" + logSep + "Action" + logSep + "persistentID" + logSep + "itemType" + logSep + "itemName" + logSep + "isStackable" + logSep + "stackSize" + logSep + "distance" + logSep + "oldLocText" + logSep + "oldLocParentType" + logSep + "oldLocParentName" + logSep + "oldLocPos" + logSep + "oldParentPersistentID" + logSep + "oldSteamId" + logSep + "oldName" + logSep + "oldPlayerPos" + logSep + "newLocText" + logSep + "newLocParentType" + logSep + "newLocParentName" + logSep + "newLocPos" + logSep + "newParentPersistentID" + logSep + "newSteamId" + logSep + "newName" + logSep + "newPlayerPos");
         } else {
-          Print(MPG_TDML + "ERROR: Unable to create " + MPG_TDML_LOGS_FILENAME);
+          Print(Vigilia_Constant+ "ERROR: Unable to create " + VIGILIA_LOGS_FILENAME);
         }
       }
 
       // Criar arquivo de log de morte
       if (config.isDeathLoggingEnabled) {
-        m_DeathLogFile = OpenFile(MPG_TDML_DEATH_LOGS_FILENAME, FileMode.WRITE);
+        m_DeathLogFile = OpenFile(VIGILIA_DEATH_LOGS_FILENAME, FileMode.WRITE);
         if (m_DeathLogFile != 0) {
           FPrintln(m_DeathLogFile, "Date Time" + logSep + "Action" + logSep + "PlayerSteamId" + logSep + "PlayerName" + logSep + "PlayerPos" + logSep + "DeathType" + logSep + "DeathCause" + logSep + "KillerSteamId" + logSep + "KillerName" + logSep + "KillerPos" + logSep + "GameTime" + logSep + "Health" + logSep + "Blood" + logSep + "Shock");
         } else {
-          Print(MPG_TDML + "ERROR: Unable to create " + MPG_TDML_DEATH_LOGS_FILENAME);
+          Print(Vigilia_Constant+ "ERROR: Unable to create " + VIGILIA_DEATH_LOGS_FILENAME);
         }
       }
 
       // Criar arquivo de log de desconexão
       if (config.isDisconnectLoggingEnabled) {
-        m_DisconnectLogFile = OpenFile(MPG_TDML_DISCONNECT_LOGS_FILENAME, FileMode.WRITE);
+        m_DisconnectLogFile = OpenFile(VIGILIA_DISCONNECT_LOGS_FILENAME, FileMode.WRITE);
         if (m_DisconnectLogFile != 0) {
           FPrintln(m_DisconnectLogFile, "Date Time" + logSep + "Action" + logSep + "PlayerSteamId" + logSep + "PlayerName" + logSep + "PlayerPos" + logSep + "Reason" + logSep + "Health" + logSep + "Blood" + logSep + "InCombat" + logSep + "NearEnemies" + logSep + "GameTime");
         } else {
-          Print(MPG_TDML + "ERROR: Unable to create " + MPG_TDML_DISCONNECT_LOGS_FILENAME);
+          Print(Vigilia_Constant+ "ERROR: Unable to create " + VIGILIA_DISCONNECT_LOGS_FILENAME);
         }
       }
     }
@@ -132,7 +132,7 @@ class MPG_TDM_Logger extends PluginBase {
   };
 
   void Debug(string text) { 
-    if (GetMPG_TDML_ModConfig().isDebugEnabled) {
+    if (GetVigilia_ModConfig().isDebugEnabled) {
       Log("DEBUG" + logSep + text); 
     }
   };
@@ -194,21 +194,21 @@ class MPG_TDM_Logger extends PluginBase {
     return "UNKNOWN";
   }
 
-  static string GetActionType(MPG_TDML_ActionType type) {
+  static string GetActionType(Vigilia_ActionType type) {
     switch (type) {
-    case MPG_TDML_ActionType.MOVE: {
+    case Vigilia_ActionType.MOVE: {
       return "MOVE";
     }
-    case MPG_TDML_ActionType.TAKE: {
+    case Vigilia_ActionType.TAKE: {
       return "TAKE";
     }
-    case MPG_TDML_ActionType.DROP: {
+    case Vigilia_ActionType.DROP: {
       return "DROP";
     }
-    case MPG_TDML_ActionType.DEATH: {
+    case Vigilia_ActionType.DEATH: {
       return "DEATH";
     }
-    case MPG_TDML_ActionType.DISCONNECT: {
+    case Vigilia_ActionType.DISCONNECT: {
       return "DISCONNECT";
     }
     default: {
@@ -218,24 +218,24 @@ class MPG_TDM_Logger extends PluginBase {
     return "UNKNOWN";
   }
 
-  static string GetDeathType(MPG_TDML_DeathType type) {
+  static string GetDeathType(Vigilia_DeathType type) {
     switch (type) {
-    case MPG_TDML_DeathType.PVP: {
+    case Vigilia_DeathType.PVP: {
       return "PVP";
     }
-    case MPG_TDML_DeathType.PVE_ZOMBIE: {
+    case Vigilia_DeathType.PVE_ZOMBIE: {
       return "PVE_ZOMBIE";
     }
-    case MPG_TDML_DeathType.PVE_ANIMAL: {
+    case Vigilia_DeathType.PVE_ANIMAL: {
       return "PVE_ANIMAL";
     }
-    case MPG_TDML_DeathType.ENVIRONMENTAL: {
+    case Vigilia_DeathType.ENVIRONMENTAL: {
       return "ENVIRONMENTAL";
     }
-    case MPG_TDML_DeathType.SUICIDE: {
+    case Vigilia_DeathType.SUICIDE: {
       return "SUICIDE";
     }
-    case MPG_TDML_DeathType.OBJECT: {
+    case Vigilia_DeathType.OBJECT: {
       return "OBJECT";
     }
     default: {
@@ -264,20 +264,20 @@ class MPG_TDM_Logger extends PluginBase {
       lootRestContext.SetHeader("application/json");
     }
 
-    MPG_TDM_DiscordMessage data = new MPG_TDM_DiscordMessage(title, message);
-    string jsonData = JsonFileLoader<MPG_TDM_DiscordMessage>.JsonMakeData(data);
+    LogDiscordMessage data = new LogDiscordMessage(title, message);
+    string jsonData = JsonFileLoader<LogDiscordMessage>.JsonMakeData(data);
     string payload = "{\"embeds\":[" + jsonData + "]}";
     
     lootRestContext.POST(null, "", payload);
   }
 };
 
-class MPG_TDM_DiscordMessage {
+class LogDiscordMessage {
   string title;
   string description;
   int color = 15744574; // Cor laranja padrão
 
-  void MPG_TDM_DiscordMessage(string ttle, string descr) {
+  void LogDiscordMessage(string ttle, string descr) {
     title = ttle;
     description = descr;
     

@@ -1,4 +1,4 @@
-class MPG_TDML_ModConfig {
+class Vigilia_ModConfig {
   int configVersion = 2;
   string documentation = "https://docs.mpg-dayz.ru/tdm-logs/";
   string timestampApiUrl;
@@ -23,11 +23,11 @@ class MPG_TDML_ModConfig {
   // === CONFIGURAÇÕES DE DISCONNECT LOGGING ===
   bool isDisconnectLoggingEnabled = false;
   string disconnectDiscordUrl;
-  string disconnectDiscordTitle = "DesconexÃ£o Suspeita";
+  string disconnectDiscordTitle = "Desconexão Suspeita";
 
-  void MPG_TDML_ModConfig() {
+  void Vigilia_ModConfig() {
     if (GetGame().IsServer() && GetGame().IsMultiplayer()) {
-      Print(MPG_TDML + " Init");
+      Print(Vigilia_Constant+ " Init");
       LoadConfig();
     }
   }
@@ -76,23 +76,23 @@ class MPG_TDML_ModConfig {
   private void LoadConfig() {
     // clang-format on
     if (GetGame().IsServer() && GetGame().IsMultiplayer()) {
-      if (FileExist(MPG_TDML_CONFIG_FILENAME)) {
-        Print(MPG_TDML + " config found, loading...");
-        JsonFileLoader<MPG_TDML_ModConfig>.JsonLoadFile(MPG_TDML_CONFIG_FILENAME, this);
+      if (FileExist(VIGILIA_CONFIG_FILENAME)) {
+        Print(Vigilia_Constant+ " config found, loading...");
+        JsonFileLoader<Vigilia_ModConfig>.JsonLoadFile(VIGILIA_CONFIG_FILENAME, this);
         UpdateConfig();
       } else {
-        Print(MPG_TDML + " config NOT found, creating...");
-        CreateMPG_TDML_ModConfig();
+        Print(Vigilia_Constant+ " config NOT found, creating...");
+        CreateVigilia_ModConfig();
       }
     }
   }
 
   // clang-format off
-  private void CreateMPG_TDML_ModConfig() {
+  private void CreateVigilia_ModConfig() {
     // clang-format on
-    if (!FileExist(MPG_TDML_ROOT_DIR)) {
-      Print(MPG_TDML + "'" + MPG_TDML_ROOT_DIR + "' does not exist, creating...");
-      MakeDirectory(MPG_TDML_ROOT_DIR);
+    if (!FileExist(VIGILIA_ROOT_DIR)) {
+      Print(Vigilia_Constant+ "'" + VIGILIA_ROOT_DIR + "' does not exist, creating...");
+      MakeDirectory(VIGILIA_ROOT_DIR);
     }
 
     // Configurações padrão
@@ -104,8 +104,8 @@ class MPG_TDML_ModConfig {
     deathDiscordUrl = "";
     disconnectDiscordUrl = "";
 
-    JsonFileLoader<MPG_TDML_ModConfig>.JsonSaveFile(MPG_TDML_CONFIG_FILENAME, this);
-    Print(MPG_TDML + " Default config created. Please configure Discord URLs in: " + MPG_TDML_CONFIG_FILENAME);
+    JsonFileLoader<Vigilia_ModConfig>.JsonSaveFile(VIGILIA_CONFIG_FILENAME, this);
+    Print(Vigilia_Constant+ " Default config created. Please configure Discord URLs in: " + VIGILIA_CONFIG_FILENAME);
   }
 
   // clang-format off
@@ -125,17 +125,17 @@ class MPG_TDML_ModConfig {
     }
     
     if (needsUpdate) {
-      JsonFileLoader<MPG_TDML_ModConfig>.JsonSaveFile(MPG_TDML_CONFIG_FILENAME, this);
-      Print(MPG_TDML + " Config updated to version " + configVersion);
+      JsonFileLoader<Vigilia_ModConfig>.JsonSaveFile(VIGILIA_CONFIG_FILENAME, this);
+      Print(Vigilia_Constant+ " Config updated to version " + configVersion);
     }
   }
 }
 
-static ref MPG_TDML_ModConfig g_MPG_TDML_ModConfig;
+static ref Vigilia_ModConfig g_Vigilia_ModConfig;
 
-static ref MPG_TDML_ModConfig GetMPG_TDML_ModConfig() {
-  if (!g_MPG_TDML_ModConfig) {
-    g_MPG_TDML_ModConfig = new MPG_TDML_ModConfig();
+static ref Vigilia_ModConfig GetVigilia_ModConfig() {
+  if (!g_Vigilia_ModConfig) {
+    g_Vigilia_ModConfig = new Vigilia_ModConfig();
   }
-  return g_MPG_TDML_ModConfig;
+  return g_Vigilia_ModConfig;
 }

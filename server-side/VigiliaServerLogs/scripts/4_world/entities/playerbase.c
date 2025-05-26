@@ -1,27 +1,27 @@
 // Corrigido para evitar uso direto de IsPlayer() em Object
 modded class PlayerBase {
-  MPG_TDM_Logger MPG_TDMLogger = MPG_TDM_Logger.Cast(GetPlugin(MPG_TDM_Logger));
-  MPG_TDML_ModConfig MPG_TDML_Config = g_MPG_TDML_ModConfig;
+  Vigilia_Logger VigiliaLogger = Vigilia_Logger.Cast(GetPlugin(Vigilia_Logger));
+  Vigilia_ModConfig VIGILIA_Config = g_Vigilia_ModConfig;
 
-  private bool m_MPG_IsInCombat = false;
-  private float m_MPG_LastCombatTime = 0;
-  private vector m_MPG_LastKnownPosition;
-  private bool m_MPG_PlayerLoaded = false;
+  private bool m_VIGILIA_IsInCombat = false;
+  private float m_VIGILIA_LastCombatTime = 0;
+  private vector m_VIGILIA_LastKnownPosition;
+  private bool m_VIGILIA_PlayerLoaded = false;
 
   override void OnPlayerLoaded() {
     super.OnPlayerLoaded();
-    m_MPG_LastKnownPosition = GetPosition();
-    m_MPG_PlayerLoaded = true;
+    m_VIGILIA_LastKnownPosition = GetPosition();
+    m_VIGILIA_PlayerLoaded = true;
 
-    if (MPG_TDML_Config && MPG_TDML_Config.isDebugEnabled) {
-      MPG_TDMLogger.Debug("Player loaded: " + GetIdentity().GetName());
+    if (VIGILIA_Config && VIGILIA_Config.isDebugEnabled) {
+      VigiliaLogger.Debug("Player loaded: " + GetIdentity().GetName());
     }
   }
 
   override void EEKilled(Object killer) {
     super.EEKilled(killer);
 
-    if (MPG_TDML_Config && MPG_TDML_Config.isDeathLoggingEnabled && m_MPG_PlayerLoaded) {
+    if (VIGILIA_Config && VIGILIA_Config.isDeathLoggingEnabled && m_VIGILIA_PlayerLoaded) {
       LogPlayerDeath(killer);
     }
   }
@@ -31,11 +31,11 @@ modded class PlayerBase {
 
     PlayerBase attacker = PlayerBase.Cast(source);
     if (attacker) {
-      m_MPG_IsInCombat = true;
-      m_MPG_LastCombatTime = GetGame().GetTime();
+      m_VIGILIA_IsInCombat = true;
+      m_VIGILIA_LastCombatTime = GetGame().GetTime();
 
-      if (MPG_TDML_Config && MPG_TDML_Config.isDebugEnabled && attacker.GetIdentity()) {
-        MPG_TDMLogger.Debug("Player " + GetIdentity().GetName() + " entered combat with " + attacker.GetIdentity().GetName());
+      if (VIGILIA_Config && VIGILIA_Config.isDebugEnabled && attacker.GetIdentity()) {
+        VigiliaLogger.Debug("Player " + GetIdentity().GetName() + " entered combat with " + attacker.GetIdentity().GetName());
       }
     }
   }
@@ -55,14 +55,14 @@ modded class PlayerBase {
   }
 
   void LogPlayerDeath(Object killer) {
-      if (!MPG_TDMLogger || !m_MPG_PlayerLoaded || !GetIdentity()) {
+      if (!VigiliaLogger || !m_VIGILIA_PlayerLoaded || !GetIdentity()) {
         return;
       }
 
-      string playerInfo = MPG_TDMLogger.GetPlayerInfo(this);
+      string playerInfo = VigiliaLogger.GetPlayerInfo(this);
       string killerInfo = "Unknown";
       string deathCause = "Unknown";
-      MPG_TDML_DeathType deathType = MPG_TDML_DeathType.UNKNOWN;
+      Vigilia_DeathType deathType = Vigilia_DeathType.UNKNOWN;
       vector deathPos = GetPosition();
 
       float health = GetHealth01("GlobalHealth", "Health") * 100;
@@ -111,62 +111,62 @@ modded class PlayerBase {
       if (killerPlayer && killerPlayer.GetIdentity()) {
         // Verificar se o assassino é a própria vítima (suicídio)
         if (killerPlayer.GetIdentity().GetPlainId() == GetIdentity().GetPlainId()) {
-          killerInfo = MPG_TDMLogger.GetPlayerInfo(this);
+          killerInfo = VigiliaLogger.GetPlayerInfo(this);
           if (weaponUsed != "") {
             deathCause = "Suicídio com " + weaponUsed + " - " + GetIdentity().GetName();
           } else {
             deathCause = "Suicídio - " + GetIdentity().GetName();
           }
-          deathType = MPG_TDML_DeathType.SUICIDE;
+          deathType = Vigilia_DeathType.SUICIDE;
         } else {
-          killerInfo = MPG_TDMLogger.GetPlayerInfo(killerPlayer);
+          killerInfo = VigiliaLogger.GetPlayerInfo(killerPlayer);
           if (weaponUsed != "") {
             deathCause = "PvP com " + weaponUsed + " - " + killerPlayer.GetIdentity().GetName();
           } else {
             deathCause = "PvP - " + killerPlayer.GetIdentity().GetName();
           }
-          deathType = MPG_TDML_DeathType.PVP;
+          deathType = Vigilia_DeathType.PVP;
         }
       } else if (killer && killer.IsInherited(ZombieBase)) {
         deathCause = "Zombie - " + killer.GetType();
-        deathType = MPG_TDML_DeathType.PVE_ZOMBIE;
-        killerInfo = "0" + MPG_TDML_LOG_SEPARATOR + killer.GetType() + MPG_TDML_LOG_SEPARATOR + MPG_TDMLogger.GetParedPosition(killer.GetPosition());
+        deathType = Vigilia_DeathType.PVE_ZOMBIE;
+        killerInfo = "0" + VIGILIA_LOG_SEPARATOR + killer.GetType() + VIGILIA_LOG_SEPARATOR + VigiliaLogger.GetParedPosition(killer.GetPosition());
       } else if (killer && killer.IsInherited(AnimalBase)) {
         deathCause = "Animal - " + killer.GetType();
-        deathType = MPG_TDML_DeathType.PVE_ANIMAL;
-        killerInfo = "0" + MPG_TDML_LOG_SEPARATOR + killer.GetType() + MPG_TDML_LOG_SEPARATOR + MPG_TDMLogger.GetParedPosition(killer.GetPosition());
+        deathType = Vigilia_DeathType.PVE_ANIMAL;
+        killerInfo = "0" + VIGILIA_LOG_SEPARATOR + killer.GetType() + VIGILIA_LOG_SEPARATOR + VigiliaLogger.GetParedPosition(killer.GetPosition());
       } else if (killer) {
         deathCause = "Object - " + killer.GetType();
-        deathType = MPG_TDML_DeathType.OBJECT;
-        killerInfo = "0" + MPG_TDML_LOG_SEPARATOR + killer.GetType() + MPG_TDML_LOG_SEPARATOR + MPG_TDMLogger.GetParedPosition(killer.GetPosition());
+        deathType = Vigilia_DeathType.OBJECT;
+        killerInfo = "0" + VIGILIA_LOG_SEPARATOR + killer.GetType() + VIGILIA_LOG_SEPARATOR + VigiliaLogger.GetParedPosition(killer.GetPosition());
       } else {
         // CORREÇÃO: Lógica melhorada para classificar mortes ambientais
         // Priorizar as causas mais específicas primeiro
         if (blood <= 0) {
           deathCause = "Blood Loss (Bleeding)";
-          deathType = MPG_TDML_DeathType.ENVIRONMENTAL;
+          deathType = Vigilia_DeathType.ENVIRONMENTAL;
         } else if (health <= 0) {
           deathCause = "Health Loss (Starvation/Disease)";
-          deathType = MPG_TDML_DeathType.ENVIRONMENTAL;
+          deathType = Vigilia_DeathType.ENVIRONMENTAL;
         } else if (shock >= 100) {
           deathCause = "Unconsciousness/Shock";
-          deathType = MPG_TDML_DeathType.ENVIRONMENTAL;
+          deathType = Vigilia_DeathType.ENVIRONMENTAL;
         } else {
           // Apenas mortes que não se enquadram em nenhuma categoria específica
           // devem ser consideradas ambientais genéricas
           deathCause = "Environmental";
-          deathType = MPG_TDML_DeathType.ENVIRONMENTAL;
+          deathType = Vigilia_DeathType.ENVIRONMENTAL;
         }
-        killerInfo = "0" + MPG_TDML_LOG_SEPARATOR + "Environmental" + MPG_TDML_LOG_SEPARATOR + MPG_TDMLogger.GetParedPosition(deathPos);
+        killerInfo = "0" + VIGILIA_LOG_SEPARATOR + "Environmental" + VIGILIA_LOG_SEPARATOR + VigiliaLogger.GetParedPosition(deathPos);
       }
 
       string playerSteamId = GetIdentity().GetPlainId();
       string playerName = GetIdentity().GetName();
-      string playerPos = MPG_TDMLogger.GetParedPosition(deathPos);
+      string playerPos = VigiliaLogger.GetParedPosition(deathPos);
 
-      string sep = MPG_TDML_LOG_SEPARATOR;
+      string sep = VIGILIA_LOG_SEPARATOR;
       string logEntry = "DEATH" + sep + playerSteamId + sep + playerName + sep + playerPos;
-      logEntry += sep + MPG_TDMLogger.GetDeathType(deathType) + sep + deathCause;
+      logEntry += sep + VigiliaLogger.GetDeathType(deathType) + sep + deathCause;
       logEntry += sep + killerInfo + sep + GetGame().GetTime().ToString();
       logEntry += sep + health.ToString() + sep + blood.ToString() + sep + shock.ToString();
 
@@ -198,16 +198,16 @@ modded class PlayerBase {
       
       // message = message + "**Log Completo:**\n" + logEntry;
 
-      MPG_TDMLogger.LogDeath(logEntry);
-      MPG_TDMLogger.SendToDiscord(MPG_TDML_Config.deathDiscordUrl, MPG_TDML_Config.deathDiscordTitle, message);
+      VigiliaLogger.LogDeath(logEntry);
+      VigiliaLogger.SendToDiscord(VIGILIA_Config.deathDiscordUrl, VIGILIA_Config.deathDiscordTitle, message);
 
-      if (MPG_TDML_Config.isDebugEnabled) {
-        MPG_TDMLogger.Debug("Player death logged: " + playerName + " (" + playerSteamId + ") - Cause: " + deathCause);
+      if (VIGILIA_Config.isDebugEnabled) {
+        VigiliaLogger.Debug("Player death logged: " + playerName + " (" + playerSteamId + ") - Cause: " + deathCause);
       }
   }
 
   void LogPlayerDisconnect(string reason) {
-    if (!MPG_TDMLogger || !m_MPG_PlayerLoaded || !GetIdentity()) {
+    if (!VigiliaLogger || !m_VIGILIA_PlayerLoaded || !GetIdentity()) {
       return;
     }
 
@@ -219,7 +219,7 @@ modded class PlayerBase {
     float blood = GetHealth01("GlobalHealth", "Blood") * 5000;
     float healthPercent = health;
 
-    bool inCombat = (GetGame().GetTime() - m_MPG_LastCombatTime) < 30;
+    bool inCombat = (GetGame().GetTime() - m_VIGILIA_LastCombatTime) < 30;
     bool nearEnemies = false;
     int nearbyPlayerCount = 0;
 
@@ -258,39 +258,39 @@ modded class PlayerBase {
       suspiciousReason += "Sangue baixo (" + blood.ToString() + "); ";
     }
 
-    if (suspiciousDisconnect || MPG_TDML_Config.isDebugEnabled) {
-      string sep = MPG_TDML_LOG_SEPARATOR;
-      string logEntry = "DISCONNECT" + sep + playerSteamId + sep + playerName + sep + MPG_TDMLogger.GetParedPosition(playerPos) + sep + reason + sep + healthPercent.ToString() + sep + blood.ToString() + sep + inCombat.ToString() + sep + nearbyPlayerCount.ToString();
+    if (suspiciousDisconnect || VIGILIA_Config.isDebugEnabled) {
+      string sep = VIGILIA_LOG_SEPARATOR;
+      string logEntry = "DISCONNECT" + sep + playerSteamId + sep + playerName + sep + VigiliaLogger.GetParedPosition(playerPos) + sep + reason + sep + healthPercent.ToString() + sep + blood.ToString() + sep + inCombat.ToString() + sep + nearbyPlayerCount.ToString();
 
-      MPG_TDMLogger.LogDisconnect(logEntry);
+      VigiliaLogger.LogDisconnect(logEntry);
 
-      if (MPG_TDML_Config.isDebugEnabled) {
-        MPG_TDMLogger.Debug("Player disconnect logged: " + playerName + " (" + playerSteamId + ") - Suspicious: " + suspiciousDisconnect.ToString() + " - Reason: " + suspiciousReason);
+      if (VIGILIA_Config.isDebugEnabled) {
+        VigiliaLogger.Debug("Player disconnect logged: " + playerName + " (" + playerSteamId + ") - Suspicious: " + suspiciousDisconnect.ToString() + " - Reason: " + suspiciousReason);
       }
     }
   }
 
   override void OnCommandMoveStart() {
     super.OnCommandMoveStart();
-    if (m_MPG_PlayerLoaded) {
-      m_MPG_LastKnownPosition = GetPosition();
+    if (m_VIGILIA_PlayerLoaded) {
+      m_VIGILIA_LastKnownPosition = GetPosition();
     }
   }
 
   override void OnCommandMoveFinish() {
     super.OnCommandMoveFinish();
 
-    if (m_MPG_IsInCombat && (GetGame().GetTime() - m_MPG_LastCombatTime) > 60) {
-      m_MPG_IsInCombat = false;
+    if (m_VIGILIA_IsInCombat && (GetGame().GetTime() - m_VIGILIA_LastCombatTime) > 60) {
+      m_VIGILIA_IsInCombat = false;
 
-      if (MPG_TDML_Config && MPG_TDML_Config.isDebugEnabled) {
-        MPG_TDMLogger.Debug("Player " + GetIdentity().GetName() + " exited combat mode");
+      if (VIGILIA_Config && VIGILIA_Config.isDebugEnabled) {
+        VigiliaLogger.Debug("Player " + GetIdentity().GetName() + " exited combat mode");
       }
     }
   }
 
   void ForceLogDisconnect(string customReason) {
-    if (MPG_TDML_Config && MPG_TDML_Config.isDisconnectLoggingEnabled) {
+    if (VIGILIA_Config && VIGILIA_Config.isDisconnectLoggingEnabled) {
       LogPlayerDisconnect(customReason);
     }
   }
