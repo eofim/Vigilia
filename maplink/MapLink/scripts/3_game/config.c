@@ -2,8 +2,6 @@ class MapLinkConfig extends UApiConfigBase
 {
 	string ConfigVersion = "0";
 	static string CurrentVersion = "0";
-
-	int TravelCooldownSeconds = 0;
 	
 	ref array<ref UApiServerData> Servers = new array<ref UApiServerData>;
 	ref array<ref MapLinkArrivalPoint> ArrivalPoints = new array<ref MapLinkArrivalPoint>;
@@ -222,9 +220,9 @@ class MapLinkConfig extends UApiConfigBase
 		switch (LowerWorldName)
 		{
 			case "enoch":
-				return "Livonia";
+				return "Liviona";
 			case "enochgloom":
-				return "Livonia";
+				return "Liviona";
 			case "chernarusplus":
 				return "Chernarus";
 			case "chernarusplusgloom":

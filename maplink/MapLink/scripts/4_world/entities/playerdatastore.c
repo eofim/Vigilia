@@ -166,7 +166,6 @@ modded class PlayerDataStore extends Managed
 				}
 			}
 		}
-
 		player.StatUpdate(AnalyticsManagerServer.STAT_PLAYTIME, m_TimeSurvivedValue);
 		player.StatUpdate(AnalyticsManagerServer.STAT_PLAYERS_KILLED, m_PlayersKilledValue);
 		player.StatUpdate(AnalyticsManagerServer.STAT_INFECTED_KILLED, m_InfectedKilledValue);
@@ -175,7 +174,7 @@ modded class PlayerDataStore extends Managed
 		player.SetLifeSpanStateVisible(m_LifeSpanState);
 		player.SetLastShavedSeconds(m_LastShavedSeconds);
 		player.SetBloodyHands(m_HasBloodyHandsVisible);
-
+		
 		player.OnUApiLoad(this);
 		
 		player.GetStatBloodType().Set(m_BloodType);

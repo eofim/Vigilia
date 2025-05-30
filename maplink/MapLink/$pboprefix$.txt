@@ -1,0 +1,5 @@
+//<'MapLink.pbo' properties via Mikero's dos tools, dll version 9.98>
+product=dayz ugc;
+prefix=MapLink;
+//PboType=Arma Addon;
+//</properties>

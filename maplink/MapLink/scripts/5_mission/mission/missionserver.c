@@ -97,8 +97,6 @@ modded class MissionServer extends MissionBase
 		
 	bool UApiOnClientNewEvent(PlayerIdentity identity, vector pos, ParamsReadContext ctx)
 	{
-		MLLog.Info("MapLink :: UApiOnClientNewEvent @ " + pos);
-
 		PlayerDataStore playerdata;	
 		
 		if (identity && m_PlayerDBQue.Contains(identity.GetId()) &&  m_PlayerDBQue.Find(identity.GetId(), playerdata) && playerdata.IsValid()) 
@@ -164,7 +162,7 @@ modded class MissionServer extends MissionBase
 				}
 
 				pos = pointPos.Get();
-				ori = pointPos.GetOrientation();//not sexual
+				ori = pointPos.GetOrientation();
 			}
 
 			PlayerBase player = PlayerBase.Cast(PlayerDataStore.Cast(playerdata).CreateWithIdentity(PlayerIdentity.Cast(identity), pos));
@@ -188,7 +186,7 @@ modded class MissionServer extends MissionBase
 			GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(player.SavePlayerToUApi, 100);
 			MLLog.Debug("Removing Player from Queue " + identity.GetId());
 			m_PlayerDBQue.Remove(identity.GetId());
-			
+			//player.UApiSaveTransferPoint(""); //! TODO: Find a way to allow respawning on either server AFTER death! Only after death. Maybe hack in to OnDeath somewhere and reset char info?
 			return true;
 		}
 
@@ -199,10 +197,11 @@ modded class MissionServer extends MissionBase
 	{
 		if (player && player.IsBeingTransfered())
 		{
-			MLLog.Debug("HandleBody IsBeingTransfered Killing Player"); //Fail Safe
-			player.SetAllowDamage(true);
-			player.SetHealth("", "Health", 0);
-			player.SetHealth("", "", 0);
+			//FYG Disabled
+			//MLLog.Debug("HandleBody IsBeingTransfered Killing Player"); //Fail Safe
+			//player.SetAllowDamage(true);
+			//player.SetHealth("", "Health", 0);
+			//player.SetHealth("", "", 0);
 		}
 
 		super.HandleBody(player);
